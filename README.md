@@ -1,28 +1,6 @@
 # AWS-Resource-Management-with-Tagging
 Este repositório contém um laboratório completo para aprendizado de gerenciamento de recursos AWS usando tags (marcações)
 
-Estrutura do repositório
-text
-
-aws-tagging-management-lab/
-├── README.md                          # Documentação principal (este arquivo)
-├── scripts/
-│   ├── change-resource-tags.sh        # Script para alterar tags em lote
-│   ├── stopinator.php                 # Script para parar/iniciar instâncias por tag
-│   └── terminate-instances.php        # Script para encerrar instâncias sem tag
-├── commands/
-│   ├── 01-describe-instances.txt      # Comandos de consulta com JMESPath
-│   ├── 02-batch-tag-update.txt        # Comandos para atualização em lote
-│   └── 03-tag-or-terminate.txt        # Comandos para política tag-or-terminate
-├── docs/
-│   ├── jmespath-cheatsheet.md         # Referência rápida do JMESPath
-│   ├── troubleshooting.md             # Problemas comuns e soluções
-│   └── best-practices.md              # Boas práticas de tagging na AWS
-└── architecture/
-    └── lab-architecture.png           # Diagrama da arquitetura do laboratório
-
-
-
 # 🏷️ AWS Resource Management with Tagging
 
 [![AWS](https://img.shields.io/badge/AWS-EC2-orange?logo=amazon-aws)](https://aws.amazon.com/ec2/)
