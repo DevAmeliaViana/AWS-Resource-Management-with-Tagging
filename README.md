@@ -2,6 +2,7 @@
 Este repositório contém um laboratório completo para aprendizado de gerenciamento de recursos AWS usando tags (marcações)
 
 Estrutura do repositório
+text
 
 aws-tagging-management-lab/
 ├── README.md                          # Documentação principal (este arquivo)
@@ -19,6 +20,8 @@ aws-tagging-management-lab/
 │   └── best-practices.md              # Boas práticas de tagging na AWS
 └── architecture/
     └── lab-architecture.png           # Diagrama da arquitetura do laboratório
+
+
 
 # 🏷️ AWS Resource Management with Tagging
 
