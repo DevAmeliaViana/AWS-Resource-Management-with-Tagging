@@ -1,7 +1,6 @@
 # AWS-Resource-Management-with-Tagging
 Este repositório contém um laboratório completo para aprendizado de gerenciamento de recursos AWS usando tags (marcações)
 
-# 🏷️ AWS Resource Management with Tagging
 
 [![AWS](https://img.shields.io/badge/AWS-EC2-orange?logo=amazon-aws)](https://aws.amazon.com/ec2/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -100,38 +99,41 @@ Ao final deste laboratório, você será capaz de:
 
 ---
 
+```markdown
 ## ⚙️ Configuração do Ambiente
 
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/aws-tagging-management-lab.git
+git clone https://github.com/DevAmeliaViana/AWS-Resource-Management-with-Tagging.git
 cd aws-tagging-management-lab
+```
 
-2. Configure as permissões dos scripts
-bash
+### 2. Configure as permissões dos scripts
 
+```bash
 chmod +x scripts/*.sh
 chmod +x scripts/*.php
+```
 
-3. Conecte-se à Command Host (ambiente de laboratório)
+### 3. Conecte-se à Command Host (ambiente de laboratório)
 
-Linux/Mac:
-bash
-
+**Linux/Mac:**
+```bash
 ssh -i labsuser.pem ec2-user@<PUBLIC_IP>
+```
 
-Windows (PuTTY):
+**Windows (PuTTY):**
+- Use o arquivo `labsuser.ppk`
+- Host: `ec2-user@<PUBLIC_IP>`
 
-    Use o arquivo labsuser.ppk
+## 🚀 Tarefas do Laboratório
 
-    Host: ec2-user@<PUBLIC_IP>
+### Tarefa 1: Inspecionar e Alterar Tags
 
-🚀 Tarefas do Laboratório
-Tarefa 1: Inspecionar e Alterar Tags
-1.1 Consultas Básicas com AWS CLI
-bash
+#### 1.1 Consultas Básicas com AWS CLI
 
+```bash
 # Listar todas instâncias do projeto ERPSystem
 aws ec2 describe-instances \
   --filter "Name=tag:Project,Values=ERPSystem"
@@ -140,10 +142,11 @@ aws ec2 describe-instances \
 aws ec2 describe-instances \
   --filter "Name=tag:Project,Values=ERPSystem" \
   --query 'Reservations[*].Instances[*].InstanceId'
+```
 
-1.2 Consultas Avançadas com JMESPath
-bash
+#### 1.2 Consultas Avançadas com JMESPath
 
+```bash
 # Retornar ID + Zona de Disponibilidade
 aws ec2 describe-instances \
   --filter "Name=tag:Project,Values=ERPSystem" \
@@ -168,12 +171,13 @@ aws ec2 describe-instances \
     Environment:Tags[?Key==`Environment`] | [0].Value,
     Version:Tags[?Key==`Version`] | [0].Value
   }'
+```
 
-1.3 Atualização em Lote de Tags
+#### 1.3 Atualização em Lote de Tags
 
-Script: scripts/change-resource-tags.sh
-bash
+**Script:** `scripts/change-resource-tags.sh`
 
+```bash
 #!/bin/bash
 # Altera a tag Version de 1.0 para 1.1 em todas instâncias de desenvolvimento
 
@@ -186,29 +190,30 @@ ids=$(aws ec2 describe-instances \
 aws ec2 create-tags --resources $ids --tags 'Key=Version,Value=1.1'
 
 echo "Tags atualizadas para: $ids"
+```
 
-Execução:
-bash
-
+**Execução:**
+```bash
 ./scripts/change-resource-tags.sh
+```
 
-Tarefa 2: Parar e Iniciar Instâncias por Tag
-O Script Stopinator (scripts/stopinator.php)
+### Tarefa 2: Parar e Iniciar Instâncias por Tag
+
+#### O Script Stopinator (`scripts/stopinator.php`)
 
 Este script usa o AWS SDK for PHP para gerenciar instâncias baseado em tags.
 
-Uso:
-bash
-
+**Uso:**
+```bash
 # Parar instâncias
 ./scripts/stopinator.php -t"Project=ERPSystem;Environment=development"
 
 # Iniciar instâncias
 ./scripts/stopinator.php -t"Project=ERPSystem;Environment=development" -s
+```
 
-Explicação do código:
-php
-
+**Explicação do código:**
+```php
 // Filtra instâncias por tags
 $result = $ec2Client->describeInstances([
     'Filters' => [
@@ -231,16 +236,19 @@ if ($startMode) {
 } else {
     $ec2Client->stopInstances(['InstanceIds' => $instanceIds]);
 }
+```
 
-Tarefa 3 (Desafio): Política Tag-Or-Terminate
-Cenário
+### Tarefa 3 (Desafio): Política Tag-Or-Terminate
 
-Sua empresa quer uma política automatizada que encerre qualquer instância que não possua a tag Environment.
-Solução Implementada
+#### Cenário
 
-Script: scripts/terminate-instances.php
-php
+Sua empresa quer uma política automatizada que encerre qualquer instância que não possua a tag `Environment`.
 
+#### Solução Implementada
+
+**Script:** `scripts/terminate-instances.php`
+
+```php
 #!/usr/bin/env php
 <?php
 require 'vendor/autoload.php';
@@ -294,16 +302,18 @@ if (!empty($toTerminate)) {
 } else {
     echo "✅ Todas as instâncias estão em conformidade.\n";
 }
+```
 
-Execução:
-bash
-
+**Execução:**
+```bash
 ./scripts/terminate-instances.php us-west-2 subnet-01a07ff6fa3055b7d
+```
 
-📝 Comandos Essenciais
-AWS CLI - Filtros por Tag
-bash
+## 📝 Comandos Essenciais
 
+### AWS CLI - Filtros por Tag
+
+```bash
 # Filtrar por chave e valor
 --filter "Name=tag:Environment,Values=production"
 
@@ -316,16 +326,20 @@ bash
 
 # Filtrar por sub-rede
 --filter "Name=subnet-id,Values=subnet-xxxxx"
+```
 
-JMESPath - Consultas Avançadas
-Objetivo	Query
-ID da instância	Reservations[*].Instances[*].InstanceId
-ID + AZ	Reservations[*].Instances[*].{ID:InstanceId, AZ:Placement.AvailabilityZone}
-Valor de tag específica	Tags[?Key==\Environment`] | [0].Value`
-Múltiplas tags	{Proj:Tags[?Key==\Project`]|[0].Value, Env:Tags[?Key==`Environment`]|[0].Value}`
-Operações em Lote
-bash
+### JMESPath - Consultas Avançadas
 
+| Objetivo | Query |
+|----------|-------|
+| ID da instância | `Reservations[*].Instances[*].InstanceId` |
+| ID + AZ | `Reservations[*].Instances[*].{ID:InstanceId, AZ:Placement.AvailabilityZone}` |
+| Valor de tag específica | `Tags[?Key==\`Environment\`] \| [0].Value` |
+| Múltiplas tags | `{Proj:Tags[?Key==\`Project\`]\|[0].Value, Env:Tags[?Key==\`Environment\`]\|[0].Value}` |
+
+### Operações em Lote
+
+```bash
 # Parar instâncias
 aws ec2 stop-instances --instance-ids i-xxx i-yyy
 
@@ -340,51 +354,51 @@ aws ec2 create-tags --resources i-xxx --tags Key=Version,Value=2.0
 
 # Remover tag
 aws ec2 delete-tags --resources i-xxx --tags Key=Environment
+```
 
-📜 Scripts Explicados
-1. change-resource-tags.sh
+## 📜 Scripts Explicados
 
-Função: Atualiza tags em lote
-Uso: ./change-resource-tags.sh
-O que faz:
+### 1. `change-resource-tags.sh`
 
-    Busca instâncias com Project=ERPSystem e Environment=development
+- **Função:** Atualiza tags em lote
+- **Uso:** `./change-resource-tags.sh`
+- **O que faz:**
+  - Busca instâncias com `Project=ERPSystem` e `Environment=development`
+  - Altera a tag `Version` de `1.0` para `1.1`
 
-    Altera a tag Version de 1.0 para 1.1
+### 2. `stopinator.php`
 
-2. stopinator.php
+- **Função:** Para ou inicia instâncias baseado em tags
+- **Uso:** `./stopinator.php -t"tag1=val1;tag2=val2" [-s]`
+- **Parâmetros:**
+  - `-t`: Tags no formato `nome=valor;nome=valor`
+  - `-s`: Modo start (sem ele, modo stop)
 
-Função: Para ou inicia instâncias baseado em tags
-Uso: ./stopinator.php -t"tag1=val1;tag2=val2" [-s]
-Parâmetros:
+### 3. `terminate-instances.php`
 
-    -t: Tags no formato nome=valor;nome=valor
+- **Função:** Encerra instâncias sem tag `Environment`
+- **Uso:** `./terminate-instances.php <region> <subnet-id>`
+- **Parâmetros:**
+  - `region`: Região AWS (ex: `us-west-2`)
+  - `subnet-id`: ID da sub-rede a verificar
 
-    -s: Modo start (sem ele, modo stop)
+## 💡 Boas Práticas de Tagging
 
-3. terminate-instances.php
+### Tags Recomendadas pela AWS
 
-Função: Encerra instâncias sem tag Environment
-Uso: ./terminate-instances.php <region> <subnet-id>
-Parâmetros:
+| Tag | Finalidade | Exemplo |
+|-----|------------|---------|
+| Name | Nome amigável do recurso | web-server-01 |
+| Environment | Ambiente (dev/staging/prod) | production |
+| Project | Projeto associado | ERPSystem |
+| CostCenter | Centro de custo | financeiro |
+| Owner | Responsável | team-aws@empresa.com |
+| Backup | Política de backup | daily |
+| Version | Versão do software | 2.1.0 |
 
-    region: Região AWS (ex: us-west-2)
+### Estratégias de Governança
 
-    subnet-id: ID da sub-rede a verificar
-
-💡 Boas Práticas de Tagging
-Tags Recomendadas pela AWS
-Tag	Finalidade	Exemplo
-Name	Nome amigável do recurso	web-server-01
-Environment	Ambiente (dev/staging/prod)	production
-Project	Projeto associado	ERPSystem
-CostCenter	Centro de custo	financeiro
-Owner	Responsável	team-aws@empresa.com
-Backup	Política de backup	daily
-Version	Versão do software	2.1.0
-Estratégias de Governança
-bash
-
+```bash
 # Política: instâncias sem Owner são encerradas
 aws ec2 describe-instances \
   --filter "Name=tag-key,Values=Owner" \
@@ -394,10 +408,11 @@ aws ec2 describe-instances \
 aws ec2 describe-instances \
   --filter "Name=tag:Environment,Values=production" \
   --query 'Reservations[*].Instances[*].InstanceId'
+```
 
-Automação com Lambda + CloudWatch
-python
+### Automação com Lambda + CloudWatch
 
+```python
 # Exemplo: AWS Lambda para enforce de tags
 import boto3
 
@@ -426,14 +441,15 @@ def lambda_handler(event, context):
     if to_terminate:
         ec2.terminate_instances(InstanceIds=to_terminate)
         print(f"Terminated: {to_terminate}")
+```
 
-🔧 Solução de Problemas
-Erro: "UnauthorizedOperation"
+## 🔧 Solução de Problemas
 
-Causa: Permissões IAM insuficientes
-Solução:
-json
+### Erro: "UnauthorizedOperation"
 
+- **Causa:** Permissões IAM insuficientes
+- **Solução:**
+```json
 {
   "Effect": "Allow",
   "Action": [
@@ -445,31 +461,31 @@ json
   ],
   "Resource": "*"
 }
+```
 
-Erro: "InvalidInstanceID.NotFound"
+### Erro: "InvalidInstanceID.NotFound"
 
-Causa: ID da instância incorreta ou instância já terminada
-Solução:
-bash
-
+- **Causa:** ID da instância incorreta ou instância já terminada
+- **Solução:**
+```bash
 # Verificar instâncias ativas
 aws ec2 describe-instances \
   --filters "Name=instance-state-name,Values=running,pending,stopped"
+```
 
-JMESPath não retorna resultados
+### JMESPath não retorna resultados
 
-Causa: Sintaxe incorreta ou tags com caracteres especiais
-Solução: Use escape com backticks:
-bash
-
+- **Causa:** Sintaxe incorreta ou tags com caracteres especiais
+- **Solução:** Use escape com backticks:
+```bash
 --query 'Tags[?Key==`Environment`] | [0].Value'
+```
 
-Script PHP não executa
+### Script PHP não executa
 
-Causa: Permissões ou dependências faltando
-Solução:
-bash
-
+- **Causa:** Permissões ou dependências faltando
+- **Solução:**
+```bash
 # Verificar PHP
 php -v
 
@@ -478,31 +494,17 @@ composer require aws/aws-sdk-php
 
 # Dar permissão de execução
 chmod +x scripts/*.php
+```
 
-📚 Referências
-Documentação Oficial
+## 📚 Referências
 
-    AWS Tagging Best Practices
+### Documentação Oficial
 
-    JMESPath Tutorial
+- [AWS Tagging Best Practices](https://aws.amazon.com/tagging-best-practices/)
+- [JMESPath Tutorial](https://jmespath.org/tutorial.html)
+- [AWS CLI EC2 Commands](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ec2/index.html)
+- [AWS SDK for PHP](https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/ec2-examples.html)
 
-    AWS CLI EC2 Commands
-
-    AWS SDK for PHP
-
-Ferramentas Úteis
-
-    JMESPath Playground - Teste suas queries
-
-    AWS Tag Editor - Gerenciar tags visualmente
-
-Cursos Recomendados
-
-    AWS Certified Solutions Architect
-
-    AWS Well-Architected Framework
-
-📄 Licença
+## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
-    
